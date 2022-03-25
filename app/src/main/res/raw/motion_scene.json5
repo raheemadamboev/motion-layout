@@ -50,9 +50,9 @@
         width: 'spread',
         height: 'spread',
         start: ['parent', 'start'],
-        bottom: ['parent', 'bottom', -16],
         end: ['parent', 'end'],
         top: ['parent', 'top'],
+        bottom: ['parent', 'bottom', -16]
       }
     }
   },
@@ -64,9 +64,9 @@
       KeyFrames: {
         KeyAttributes: [
           {
-            target: ['user_name'],
+            target: ['username'],
             frames: [0, 50, 100],
-            translationX: [0, 70, 0]
+            translationX: [0, 80, 0]
           }
         ]
       }

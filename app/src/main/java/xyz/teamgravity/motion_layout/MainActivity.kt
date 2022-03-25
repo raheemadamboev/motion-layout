@@ -3,24 +3,95 @@ package xyz.teamgravity.motion_layout
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ExperimentalMotionApi
+import androidx.constraintlayout.compose.MotionLayout
+import androidx.constraintlayout.compose.MotionScene
 import xyz.teamgravity.motion_layout.ui.theme.MotionlayoutTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MotionlayoutTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    Column {
+                        var progress by remember { mutableStateOf(0F) }
 
+                        ProfileHeader(progress = progress)
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Slider(
+                            value = progress,
+                            onValueChange = { progress = it },
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMotionApi::class)
+@Composable
+fun ProfileHeader(
+    progress: Float
+) {
+    val context = LocalContext.current
+    val scene = remember { context.resources.openRawResource(R.raw.motion_scene).readBytes().decodeToString() }
+
+    MotionLayout(
+        motionScene = MotionScene(content = scene),
+        progress = progress,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val profilePictureProperties = motionProperties(id = "profile_pic")
+        val usernameProperties = motionProperties(id = "username")
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.DarkGray)
+                .layoutId("box")
+        )
+        Image(
+            painter = painterResource(id = R.drawable.profile_pic),
+            contentDescription = "profile_pic",
+            modifier = Modifier
+                .clip(CircleShape)
+                .border(
+                    width = 2.dp,
+                    color = profilePictureProperties.value.color("background"),
+                    shape = CircleShape
+                )
+                .layoutId("profile_pic")
+        )
+        Text(
+            text = "Slim Shady",
+            fontSize = 24.sp,
+            color = usernameProperties.value.color("background"),
+            modifier = Modifier.layoutId("username")
+        )
     }
 }
